@@ -1,0 +1,1 @@
+<h1>Novo pedido de orçamento</h1><p><strong>Nome:</strong> {{ $quoteRequest->name }}</p><p><strong>Email:</strong> {{ $quoteRequest->email }}</p><p><strong>Telefone:</strong> {{ $quoteRequest->phone }}</p>@if($quoteRequest->product)<p><strong>Produto:</strong> {{ $quoteRequest->product->name }}</p>@endif<p><strong>Mensagem:</strong><br>{{ $quoteRequest->message }}</p>

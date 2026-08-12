@@ -1,0 +1,1 @@
+@extends('layouts.site') @section('title',($page->meta_title ?: $page->title).' | TROPIKAL') @section('description',$page->meta_description ?? '') @section('content')<section class="page-hero compact"><div class="container"><h1>{{ $page->title }}</h1></div></section><section class="section"><article class="container prose">{!! $page->content !!}</article></section>@endsection
