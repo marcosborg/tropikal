@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::updateOrCreate(['email'=>'admin@tropikal.pt'],['name'=>'Administrador Tropikal','password'=>Hash::make(env('ADMIN_PASSWORD','ChangeMe-'.bin2hex(random_bytes(10))))]);
+        $admin = User::firstOrCreate(['email'=>'admin@tropikal.pt'],['name'=>'Administrador Tropikal','password'=>Hash::make(env('ADMIN_PASSWORD','ChangeMe-'.bin2hex(random_bytes(10))))]);
+        if (env('ADMIN_PASSWORD')) $admin->update(['name'=>'Administrador Tropikal','password'=>Hash::make(env('ADMIN_PASSWORD'))]);
         $cats=[]; foreach([['Climatização','climatizacao',null],['Ar Condicionado','ar-condicionado','climatizacao'],['Sistemas Solares','sistemas-solares',null],['Inversores','inversores','sistemas-solares'],['Painéis Solares','paineis-solares','sistemas-solares'],['Estruturas','estruturas','sistemas-solares'],['Baterias','baterias','sistemas-solares'],['Domótica','domotica',null],['Bombas de Calor','bombas-de-calor',null],['Construção','construcao',null],['Pladur','pladur','construcao'],['MDF','mdf','construcao'],['Capoto','capoto','construcao'],['Cozinhas','cozinhas','construcao'],['Vinílico','vinilico','construcao']] as [$name,$slug,$parent]) { $cats[$slug]=Category::updateOrCreate(['slug'=>$slug],['name'=>$name,'parent_id'=>$parent ? $cats[$parent]->id:null,'description'=>'Soluções profissionais Tropikal para particulares, empresas, instaladores e revendedores.','is_published'=>true]); }
         $products=[
           ['bombas-de-calor','Bomba de Calor Tropikal XPRO300','xpro300','XPRO300','Bomba de calor A++ para águas quentes sanitárias.','Equipamento Tropikal com refrigerante R290, controlo Wi-Fi, temperatura de água até 75 °C e proteção por ânodo de magnésio.','bomba-xpro300.png','00000402-Bomba calor Tropikal xpro300.pdf'],
