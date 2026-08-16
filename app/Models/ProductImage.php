@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductImage extends Model
 {
-    protected $guarded=[]; public function product(){ return $this->belongsTo(Product::class); }
+    protected $guarded=[]; protected $casts=['is_feature_approved'=>'boolean']; public function product(){ return $this->belongsTo(Product::class); }
 }
