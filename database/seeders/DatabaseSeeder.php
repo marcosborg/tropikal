@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $admin = User::firstOrCreate(['email'=>'admin@tropikal.pt'],['name'=>'Administrador Tropikal','password'=>Hash::make(env('ADMIN_PASSWORD','ChangeMe-'.bin2hex(random_bytes(10))))]);
+        $admin->update(['is_admin'=>true]);
         if (env('ADMIN_PASSWORD')) $admin->update(['name'=>'Administrador Tropikal','password'=>Hash::make(env('ADMIN_PASSWORD'))]);
         $cats=[]; foreach([['Climatização','climatizacao',null],['Ar Condicionado','ar-condicionado','climatizacao'],['Sistemas Solares','sistemas-solares',null],['Inversores','inversores','sistemas-solares'],['Painéis Solares','paineis-solares','sistemas-solares'],['Estruturas','estruturas','sistemas-solares'],['Baterias','baterias','sistemas-solares'],['Domótica','domotica',null],['Bombas de Calor','bombas-de-calor',null],['Construção','construcao',null],['Pladur','pladur','construcao'],['MDF','mdf','construcao'],['Capoto','capoto','construcao'],['Cozinhas','cozinhas','construcao'],['Vinílico','vinilico','construcao']] as [$name,$slug,$parent]) { $cats[$slug]=Category::updateOrCreate(['slug'=>$slug],['name'=>$name,'parent_id'=>$parent ? $cats[$parent]->id:null,'description'=>'Soluções profissionais Tropikal para particulares, empresas, instaladores e revendedores.','is_published'=>true]); }
         $products=[

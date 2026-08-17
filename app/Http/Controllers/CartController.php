@@ -18,7 +18,7 @@ class CartController extends Controller
         $cart = $request->session()->get('order_cart', []);
         $cart[$key] = ['product_id' => $product->id, 'variant_id' => $variant?->id, 'quantity' => min(99, ($cart[$key]['quantity'] ?? 0) + $data['quantity']), 'notes' => $data['notes'] ?? ($cart[$key]['notes'] ?? null)];
         $request->session()->put('order_cart', $cart);
-        return back()->with('success', 'Produto adicionado ao pedido.');
+        return back()->with('success', 'Produto adicionado ao carrinho.');
     }
 
     public function update(Request $request)
@@ -31,13 +31,13 @@ class CartController extends Controller
             else { $cart[$key]['quantity'] = (int) $item['quantity']; $cart[$key]['notes'] = $item['notes'] ?? null; }
         }
         $request->session()->put('order_cart', $cart);
-        return back()->with('success', 'Pedido atualizado.');
+        return back()->with('success', 'Carrinho atualizado.');
     }
 
     public function checkout(Request $request)
     {
         $cart = $this->hydrate($request);
-        return $cart->isEmpty() ? redirect()->route('cart.show')->withErrors(['cart' => 'Adicione pelo menos um produto.']) : view('checkout', compact('cart'));
+        return redirect()->route('checkout.show');
     }
 
     public function hydrate(Request $request)
@@ -46,7 +46,9 @@ class CartController extends Controller
             $product = Product::with('images')->where('is_published', true)->find($item['product_id']);
             if (!$product) return null;
             $variant = $item['variant_id'] ? ProductVariant::whereBelongsTo($product)->find($item['variant_id']) : null;
-            return compact('key', 'product', 'variant') + ['quantity' => $item['quantity'], 'notes' => $item['notes'] ?? null];
+            $unitPrice = $variant?->price ?? $product->price;
+            $purchasable = $product->is_published && $product->is_purchasable && $unitPrice !== null && (! $product->track_stock || $product->stock_quantity >= $item['quantity']) && (!$variant || ($variant->is_available && (!$variant->track_stock || $variant->stock_quantity >= $item['quantity'])));
+            return compact('key', 'product', 'variant', 'unitPrice', 'purchasable') + ['unit_price'=>$unitPrice ? (float)$unitPrice : null, 'quantity' => $item['quantity'], 'notes' => $item['notes'] ?? null];
         })->filter()->values();
     }
 }

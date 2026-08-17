@@ -20,6 +20,8 @@ class UsersTable
                 TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
+                TextColumn::make('customer_type')->label('Tipo')->badge(),
+                TextColumn::make('is_admin')->label('Admin')->formatStateUsing(fn($state)=>$state?'Sim':'Não')->badge(),
                 TextColumn::make('email_verified_at')
                     ->label('Email verificado')
                     ->dateTime()

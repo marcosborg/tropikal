@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'phone', 'tax_number', 'company', 'customer_type',
     ];
 
     /**
@@ -45,11 +46,16 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return (bool) $this->is_admin;
     }
+
+    public function addresses(){ return $this->hasMany(Address::class); }
+    public function orders(){ return $this->hasMany(Order::class); }
+    public function returnRequests(){ return $this->hasMany(ReturnRequest::class); }
 }

@@ -13,7 +13,7 @@ class AdminPanelTest extends TestCase
 
     public function test_dashboard_contains_operational_widgets(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_admin' => true]);
         $this->actingAs($user)->get('/admin')->assertOk()
             ->assertSee('Pedidos de Orçamento')->assertSee('Utilizadores')->assertSee('Configurações');
     }

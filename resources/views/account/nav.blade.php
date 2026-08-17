@@ -1,0 +1,1 @@
+<nav class="account-nav"><a href="{{ route('account.dashboard') }}">Resumo</a><a href="{{ route('account.orders') }}">Encomendas</a><a href="{{ route('account.profile') }}">Dados e moradas</a><form method="post" action="{{ route('logout') }}">@csrf<button>Sair</button></form></nav>

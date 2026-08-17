@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{TextInput,Select,Toggle};
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Schemas\Schema;
 
@@ -20,6 +20,11 @@ class UserForm
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
+                TextInput::make('phone')->label('Telefone'),
+                TextInput::make('tax_number')->label('NIF'),
+                TextInput::make('company')->label('Empresa'),
+                Select::make('customer_type')->label('Tipo')->options(['private'=>'Particular','professional'=>'Profissional','reseller'=>'Revendedor'])->default('private'),
+                Toggle::make('is_admin')->label('Acesso à administração'),
                 TextInput::make('password')
                     ->label('Palavra-passe')
                     ->password()

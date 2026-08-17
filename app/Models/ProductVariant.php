@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProductVariant extends Model
 {
     protected $guarded = [];
-    protected $casts = ['options' => 'array', 'price' => 'decimal:2', 'is_available' => 'boolean'];
+    protected $casts = ['options' => 'array', 'price' => 'decimal:2', 'is_available' => 'boolean', 'track_stock'=>'boolean'];
     public function product() { return $this->belongsTo(Product::class); }
 }

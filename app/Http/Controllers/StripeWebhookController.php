@@ -1,0 +1,6 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\ProcessedWebhook; use App\Services\StripeCheckoutService; use Illuminate\Http\Request; use Stripe\Webhook;
+class StripeWebhookController extends Controller {
+ public function __invoke(Request $r,StripeCheckoutService $service){try{$event=Webhook::constructEvent($r->getContent(),$r->header('Stripe-Signature'),config('services.stripe.webhook_secret'));}catch(\Throwable){return response('Invalid webhook',400);}if(ProcessedWebhook::where(['provider'=>'stripe','event_id'=>$event->id])->exists())return response('OK');try{if(in_array($event->type,['checkout.session.completed','checkout.session.async_payment_succeeded']))$service->fulfill($event->data->object->id);if(in_array($event->type,['checkout.session.async_payment_failed','checkout.session.expired']))\App\Models\Order::where('stripe_checkout_session_id',$event->data->object->id)->where('payment_status','unpaid')->update(['status'=>$event->type==='checkout.session.expired'?'cancelled':'payment_failed','cancelled_at'=>$event->type==='checkout.session.expired'?now():null]);ProcessedWebhook::create(['provider'=>'stripe','event_id'=>$event->id,'event_type'=>$event->type,'processed_at'=>now()]);}catch(\Throwable $e){report($e);return response('Processing failed',500);}return response('OK');}
+}
