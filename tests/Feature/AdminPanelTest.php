@@ -26,4 +26,11 @@ class AdminPanelTest extends TestCase
         $other = User::factory()->create();
         $this->assertTrue(UserResource::canDelete($other));
     }
+
+    public function test_product_and_page_management_forms_render(): void
+    {
+        $user = User::factory()->create(['is_admin' => true]);
+        $this->actingAs($user)->get('/admin/products/create')->assertOk()->assertSee('Opções técnicas');
+        $this->actingAs($user)->get('/admin/pages/create')->assertOk()->assertSee('hero_image');
+    }
 }

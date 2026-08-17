@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OrderRequestConfirmation;
-use App\Models\{OrderRequest, SiteSetting};
+use App\Models\OrderRequest;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{DB, Mail};
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class OrderRequestController extends Controller
@@ -23,11 +25,14 @@ class OrderRequestController extends Controller
         unset($data['terms'], $data['website']);
         $order = DB::transaction(function () use ($data, $cart) {
             $order = OrderRequest::create($data + ['reference' => 'TRP-'.now()->format('ymd').'-'.strtoupper(Str::random(5))]);
-            foreach ($cart as $line) $order->items()->create([
-                'product_id' => $line['product']->id, 'product_variant_id' => $line['variant']?->id,
-                'product_name' => $line['product']->name, 'variant_name' => $line['variant']?->name,
-                'quantity' => $line['quantity'], 'notes' => $line['notes'],
-            ]);
+            foreach ($cart as $line) {
+                $order->items()->create([
+                    'product_id' => $line['product']->id, 'product_variant_id' => $line['variant']?->id,
+                    'product_name' => $line['product']->name, 'variant_name' => $line['variant']?->name,
+                    'quantity' => $line['quantity'], 'unit_price' => $line['unit_price'], 'notes' => $line['notes'],
+                ]);
+            }
+
             return $order->load('items');
         });
         try {
@@ -35,8 +40,11 @@ class OrderRequestController extends Controller
             $to = SiteSetting::where('key', 'email')->value('value') ?: config('mail.from.address');
             Mail::to($to)->send(new OrderRequestConfirmation($order, true));
             $order->update(['notified_at' => now()]);
-        } catch (\Throwable $e) { report($e); }
+        } catch (\Throwable $e) {
+            report($e);
+        }
         $request->session()->forget('order_cart');
+
         return redirect()->route('order.success', $order->reference);
     }
 

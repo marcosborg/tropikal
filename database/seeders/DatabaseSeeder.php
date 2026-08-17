@@ -56,5 +56,6 @@ class DatabaseSeeder extends Seeder
         foreach($services as $slug=>$title) Page::updateOrCreate(['slug'=>$slug],['title'=>$title,'content'=>'<p>Soluções Tropikal nos Açores e na Madeira, sujeitas a avaliação técnica, disponibilidade e confirmação de condições.</p><h2>Acompanhamento especializado</h2><p>Do levantamento inicial à instalação e assistência, com uma proposta adaptada ao projeto.</p>','is_published'=>true]);
         foreach(['email'=>'nuno@tropikal.pt','phone'=>'+351 962 009 898','company_name'=>'Tropikal Service Açores Lda','hero_title'=>'Energia inteligente para um futuro sustentável','hero_text'=>'Energia solar, climatização, domótica e construção com técnicos qualificados nos Açores.'] as $key=>$value) SiteSetting::updateOrCreate(['key'=>$key],['label'=>ucfirst(str_replace('_',' ',$key)),'value'=>$value]);
         foreach(['privacidade'=>'Política de Privacidade','termos'=>'Termos e Condições','cookies'=>'Política de Cookies'] as $slug=>$title) Page::updateOrCreate(['slug'=>$slug],['title'=>$title,'content'=>'<h2>'.$title.'</h2><p>Esta página pode ser atualizada no painel de administração Filament.</p>','is_published'=>true]);
+        $this->call(LatestTropikalProductsSeeder::class);
     }
 }
